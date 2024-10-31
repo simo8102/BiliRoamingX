@@ -157,8 +157,6 @@ object Accounts {
         } else {
             accountInfoCache = null
             Utils.async { getInfo() }
-            if (Utils.isMainProcess())
-                Utils.async(5000L) { checkUserStatus() }
         }
         if ((isSignOut || isSwitchAccount) && Utils.isMainProcess() && Settings.Skin()) {
             Settings.Skin.save(false)
@@ -181,8 +179,8 @@ object Accounts {
         if (lastCheckTime != 0L && current - lastCheckTime < checkInterval)
             return@runCatching
         cachePrefs.edit { putLong(key, current) }
-        val api = StringDecoder.decode("").toString(Charsets.UTF_8)
-        require(api.startsWith(StringDecoder.decode("").toString(Charsets.UTF_8)))
+        val api = StringDecoder.decode("0").toString(Charsets.UTF_8)
+        require(api.startsWith(StringDecoder.decode("0").toString(Charsets.UTF_8)))
         val info = HttpClient.get("$api/$mid")?.data<BlacklistInfo>() ?: return@runCatching
         val blockedKey = "user_blocked_$mid"
         if (info.isBlacklist && info.banUntil.time > current) Utils.runOnMainThread {
